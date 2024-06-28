@@ -1,0 +1,104 @@
+---
+title: "gapminder"
+author: "henryO"
+date: "2024-06-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+df <- read_csv("gapminder1960to2010_socioeconomic.csv", na = "")
+
+head(df)
+```
+
+```{r}
+any(is.na(df)) # to determine if there is any NA value in the dataframe
+```
+```{r}
+any(is.na(df$income_groups)) # to check for NA in income_groups column
+```
+```{r}
+any(is.na(df$life_expectancy))
+```
+```{r}
+any(is.na(df$year))
+```
+
+
+```{r}
+str(df)
+```
+```{r}
+df %>%
+  select("country", "life_expectancy", "world_region", "year") %>%
+  drop_na(life_expectancy) %>%
+  filter(country == 'Mali') %>%
+  ggplot(aes(year, life_expectancy, colour = 'red')) +
+  labs(title = "Life expectancy in Mali from 1960 - 2010", subtitle = "Did life expectancy in Mali improve over time?") +
+  geom_line(size = 1) +
+  geom_point(colour = 'black', size = 3) +
+   theme_bw() + 
+  theme(axis.text.x = element_text(size = 12, colour = "black", angle = 40, vjust = 1, hjust = 1), plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+```{r}
+df %>% 
+  select("children_per_woman", "income_groups", "world_region") %>%
+  ggplot(aes(world_region, children_per_woman, colour = income_groups)) +
+  geom_boxplot() + 
+  labs(title = "Children per woman across world regions", subtitle = "Does family size influence income group?") +
+  xlab("world region") + 
+  ylab("children per woman") + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 12, colour = "black", angle = 40, vjust = 1, hjust = 1), plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+Across different world regions, families with lower children per woman mostly tend to have higher income. 
+
+
+```{r}
+df %>%
+  select("world_region", "life_expectancy", "main_religion", "population") %>%
+  ggplot(aes(world_region, life_expectancy)) + 
+  geom_violin(scale = 'width') +
+  geom_boxplot(width = 0.2) +
+  labs(title = 'Life expectancy across world regions') +
+  xlab('World region') +
+  ylab('Life expectancy') +
+  theme_bw() +
+  theme(axis.text = element_text(size = 10, colour = 'black', angle = 40, vjust = 1, hjust = 1), plot.title = element_text(hjust = 0.5))
+```
+sub-saharan africa has the highest population
+
+
+```{r}
+df %>%
+  filter(world_region == "sub_saharan_africa") %>%
+  drop_na(life_expectancy) %>%
+  ggplot(aes(country, life_expectancy, colour = income_groups)) +
+  geom_point() +
+  labs(title = 'Life expectancy in subsaharan countries') +
+  xlab('country') +
+  ylab('Life expectancy') +
+  theme_bw() +
+  theme(axis.text = element_text(size = 8, colour = 'black', angle = 90, vjust = 1, hjust = 1), plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+```{r}
+df %>%
+  filter(year > 2009) %>%
+  ggplot(aes(income_per_person, colour = world_region)) +
+  geom_histogram() +
+  xlab("income per person")
+```
